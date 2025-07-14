@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Binance Web Bot Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f8f8f8; padding: 20px; }
+    h1 { color: #333; }
+    button { padding: 10px 15px; margin: 5px; }
+    input { padding: 5px; }
+    pre { background: #eee; padding: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Binance Web Bot Dashboard</h1>
+
+  <h2>Balances</h2>
+  <button onclick="fetchBalances()">Load Balances</button>
+  <pre id="balances">Click 'Load Balances' to view.</pre>
+
+  <h2>Market Buy</h2>
+  <input id="buySymbol" placeholder="Symbol e.g. TURBOUSDT" />
+  <input id="buyAmount" placeholder="USDT Amount" />
+  <button onclick="marketBuy()">Buy</button>
+
+  <h2>Market Sell</h2>
+  <input id="sellSymbol" placeholder="Symbol e.g. TURBOUSDT" />
+  <input id="sellQty" placeholder="Quantity" />
+  <button onclick="marketSell()">Sell</button>
+
+  <script>
+    const API_URL = "https://binance-webbot.onrender.com";
+
+    function fetchBalances() {
+      fetch(API_URL + "/balances")
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById("balances").textContent = JSON.stringify(data, null, 2);
+        })
+        .catch(error => alert("Error: " + error));
+    }
+
+    function marketBuy() {
+      const symbol = document.getElementById("buySymbol").value;
+      const amount = document.getElementById("buyAmount").value;
+      fetch(API_URL + "/buy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ symbol: symbol, usdt_amount: amount })
+      })
+        .then(response => response.json())
+        .then(data => alert("Buy order placed:\n" + JSON.stringify(data, null, 2)))
+        .catch(error => alert("Error: " + error));
+    }
+
+    function marketSell() {
+      const symbol = document.getElementById("sellSymbol").value;
+      const qty = document.getElementById("sellQty").value;
+      fetch(API_URL + "/sell", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ symbol: symbol, quantity: qty })
+      })
+        .then(response => response.json())
+        .then(data => alert("Sell order placed:\n" + JSON.stringify(data, null, 2)))
+        .catch(error => alert("Error: " + error));
+    }
+  </script>
+</body>
+</html>
